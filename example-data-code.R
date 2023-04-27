@@ -1,3 +1,5 @@
+library(tidyverse)
+
 example_data <- tibble(coder = c(rep(1, 50),
                                  rep(2, 50),
                                  rep(3, 50),
@@ -26,3 +28,11 @@ example_data <- tibble(coder = c(rep(1, 50),
                            replace = T,
                            prob = c(.75,
                                     .25)))
+
+
+#coder_agreement(example_data,
+#                'coder',
+#                'action_id',
+#                'coverage')
+
+
