@@ -9,6 +9,7 @@ irr_stats(
   rater_column,
   subject_column,
   coding_column,
+  include_n_raters = 2,
   round_digits = 2,
   stats_to_include = c("Percentage agreement", "Cohen's Kappa", "Maxwell's RE",
     "Krippendorf's Alpha")
@@ -24,7 +25,11 @@ from a given rater-subject.}
 
 \item{coding_column}{The name of the column containing the codings assigned by the raters as a string.}
 
-\item{round_digits}{The number of decimals to round the irr values by. The default is 2.}
+\item{include_n_raters}{Among subjects coded by more than one rater, across how many raters should IRR statistics be computed?
+The default is two, which means that only subjects coded by two and only two raters are included for IRR stats. This is done
+to handle missing values and the likelihood that, in many settings, subjects might not be coded by the same number of raters.}
+
+\item{round_digits}{The number of decimals to round the IRR values by. The default is 2.}
 
 \item{stats_to_include}{The IRR statistics to include in the output. See the documentation of the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package} for more information about the specific statistics.}
 }

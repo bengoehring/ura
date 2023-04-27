@@ -32,35 +32,57 @@ int_return_dbl_coded <- function(in_object_name,
     in_object_name %>%
       dplyr::group_by(.data[[in_rater_column]],
                       .data[[in_subject_column]]) %>%
-      dplyr::filter(n() > 1) %>%
+      dplyr::filter(dplyr::n() > 1) %>%
       nrow() != 0
   }) {
     stop("There are duplicates in the dataframe. Please be sure that there are no duplicate rater-subject observations.")
   }
 
-  # filter input data down to only the double-coded observations.
+  # filter input data down to only the multi-coded observations.
+  in_object_name <- as.data.frame(in_object_name)
+
+
   dbl_coded_df <- in_object_name %>%
     dplyr::group_by(.data[[in_subject_column]]) %>%
-    dplyr::filter(n() == 2) %>%
+    dplyr::filter(dplyr::n() > 1) %>%
     dplyr::ungroup()
 
   if(nrow(dbl_coded_df) == 0) {
     stop("There are no subjects coded by more than one rater. Therefore, IRR stats cannot be computed. ")
   }
-
-  if({
-    in_object_name %>%
-      dplyr::group_by(.data[[in_subject_column]]) %>%
-      dplyr::filter(n() > 2) %>%
-      dplyr::ungroup() %>%
-      nrow() != 0
-  }) {
-    print('Some subjects in in_object_name are coded by >2 raters. Only keeping subjects that were coded by two (and only two) raters.')
+  if(!is.numeric(in_object_name[,in_subject_column]) | !is.numeric(in_object_name[,in_rater_column])) {
+    stop("Either the subject or the rater column is not numeric.")
   }
+
+  if(!is.numeric(in_object_name[,in_coding_column])) {
+
+    dbl_coded_df <- dbl_coded_df %>%
+      dplyr::group_by(.data[[in_coding_column]]) %>%
+      dplyr::mutate(new_coding = dplyr::cur_group_id()) %>%
+      dplyr::ungroup()
+
+    print_new_ids <- dbl_coded_df %>%
+      dplyr::select(all_of(in_coding_column),
+                    new_coding) %>%
+      dplyr::distinct() %>%
+      dplyr::arrange(new_coding) %>%
+      as.data.frame()
+
+    cat('Recoding the coding column to be numeric. Here is the crosswalk of the recoded values:\n\n')
+    print(print_new_ids)
+    cat("\n\n")
+    cat("Please either make note of this recoding or create your own crosswalk.\n\n")
+
+    dbl_coded_df <- dbl_coded_df %>%
+      dplyr::mutate('{in_coding_column}' := new_coding) %>%
+      dplyr::select(-new_coding)
+  }
+
 
   return(dbl_coded_df)
 }
 
 #notes: figure out what types the rater, coding, and subject columns need to be.
+
 
 

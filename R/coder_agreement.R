@@ -16,20 +16,14 @@ coder_agreement <- function(object_name,
                             subject_column,
                             coding_column) {
 
-  # run checks and return double-coded subjects
+  # run checks and return subjects coded by more than one rater
   dbl_coded_df <- int_return_dbl_coded(in_object_name = object_name,
                                        in_rater_column = rater_column,
                                        in_subject_column = subject_column,
                                        in_coding_column = coding_column)
 
-
-  # Loop through each of the raters to find the matrix containing the codings
-  # of rater i and any other rater who coded the same subjects. So, each row
-  # will contain two columns: one wil contain the codings made by rater i and the
-  # other will contain the codings for the same subjects made by other raters.
-
-  # From there, calculate the percent agreement between rater i and the other
-  # raters who coded the same actions and return as a tibble
+  # Loop thorugh the raters, calculating for each rater the share of observations
+  #   that match with all other raters that coded those given subjects.
   raters <- unique(dplyr::pull(dplyr::select(object_name,
                                              dplyr::all_of(rater_column))))
   all_pct_agree <- vector('list',
@@ -47,27 +41,23 @@ coder_agreement <- function(object_name,
     subjects_i <- dbl_coded_df %>%
       dplyr::filter(.data[[subject_column]] %in% rater_i_ids)
 
-    # merge the data with itself to get the double-coded subjects as seperate
-    # columns.
-    # create column names for merges
-    rater_column_x <- stringr::str_c(rater_column, '.x')
-    rater_column_y <- stringr::str_c(rater_column, '.y')
+    # spin data wide by rater
+    subjects_wide <- subjects_i %>%
+      tidyr::pivot_wider(values_from = .data[[coding_column]],
+                  names_from = .data[[rater_column]],
+                  names_prefix = "rater_")
 
-    codings_i <- dplyr::left_join(subjects_i,
-                           subjects_i,
-                           by = subject_column) %>%
-      dplyr::filter(.data[[rater_column_x]] == i) %>%
-      dplyr::filter(.data[[rater_column_x]] != .data[[rater_column_y]]) %>%
-      dplyr::select(-all_of(subject_column),
-                    -all_of(rater_column_y),
-                    -all_of(rater_column_x))
+    subjects_wide <- subjects_wide %>%
+      dplyr::rowwise() %>%
+      mutate(agree = dplyr::n_distinct(dplyr::c_across(dplyr::starts_with("rater_")), na.rm = T) == 1) %>%
+      dplyr::ungroup()
 
-    # turn into a matrix and calcuate percent agreement.
-    codings_i_matrix <- as.matrix(codings_i)
+    final <- subjects_wide %>%
+      dplyr::summarise(percent_agree = 100 * round(sum(agree) / dplyr::n(), 2))
 
-    all_pct_agree[[i]] <- dplyr::tibble(rater = rater_i,
-                                 percent_agree = irr::agree(codings_i_matrix)$value,
-                                 n_dbl_coded = nrow(codings_i_matrix))
+    all_pct_agree[[i]] <- tibble(rater = i,
+                                 percent_agree = dplyr::pull(final, percent_agree),
+                                 n_multi_coded = nrow(subjects_wide))
   }
 
   final <- all_pct_agree %>%
@@ -75,4 +65,5 @@ coder_agreement <- function(object_name,
 
   return(final)
 }
+
 

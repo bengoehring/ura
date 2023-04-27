@@ -1,6 +1,14 @@
 library(tidyverse)
+library(irr)
 
-example_data <- tibble(coder = c(rep(1, 50),
+test_data <- tibble(coder_1 = sample(c(1, 2, 3), replace = T, size = 1000),
+                    coder_2 = sample(c(1, 2, 3), replace = T, size = 1000))
+
+test_2_no_missing <- tibble(coder_1 = sample(c(1, 2, 3), replace = T, size = 1000),
+                            coder_2 = sample(c(1, 2, 3), replace = T, size = 1000))
+
+# create a test dataset where different coders are coding different subjects
+test_9_missing <- tibble(coder = c(rep(1, 50),
                                  rep(2, 50),
                                  rep(3, 50),
                                  rep(4, 50),
@@ -19,7 +27,7 @@ example_data <- tibble(coder = c(rep(1, 50),
     coder == 6 ~ 201:250,
     coder == 7 ~ 241:290,
     coder == 8 ~ 281:330,
-    coder == 9 ~ 321:370
+    coder == 9 ~ c(1:25, 85:95, 331:344)
   )) %>%
   ungroup() %>%
   mutate(coverage = sample(c(0,
@@ -30,9 +38,11 @@ example_data <- tibble(coder = c(rep(1, 50),
                                     .25)))
 
 
-#coder_agreement(example_data,
-#                'coder',
-#                'action_id',
-#                'coverage')
+irr_stats(test_9_missing,
+          rater_column = 'coder',
+          subject_column = 'action_id',
+          coding_column = 'coverage',
+          include_n_raters = 3)
+
 
 
