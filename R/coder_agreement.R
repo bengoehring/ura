@@ -30,7 +30,8 @@ coder_agreement <- function(object_name,
 
   # From there, calculate the percent agreement between rater i and the other
   # raters who coded the same actions and return as a tibble
-  raters <- unique(pull(select(object_name, all_of(rater_column))))
+  raters <- unique(dplyr::pull(dplyr::select(object_name,
+                                             dplyr::all_of(rater_column))))
   all_pct_agree <- vector('list',
                           length = length(raters))
 
@@ -40,11 +41,11 @@ coder_agreement <- function(object_name,
     rater_i <- raters[i]
 
     rater_i_ids <- dbl_coded_df %>%
-      filter(.data[[rater_column]] == rater_i) %>%
-      pull(.data[[subject_column]])
+      dplyr::filter(.data[[rater_column]] == rater_i) %>%
+      dplyr::pull(.data[[subject_column]])
 
     subjects_i <- dbl_coded_df %>%
-      filter(.data[[subject_column]] %in% rater_i_ids)
+      dplyr::filter(.data[[subject_column]] %in% rater_i_ids)
 
     # merge the data with itself to get the double-coded subjects as seperate
     # columns.
@@ -52,25 +53,25 @@ coder_agreement <- function(object_name,
     rater_column_x <- stringr::str_c(rater_column, '.x')
     rater_column_y <- stringr::str_c(rater_column, '.y')
 
-    codings_i <- left_join(subjects_i,
+    codings_i <- dplyr::left_join(subjects_i,
                            subjects_i,
                            by = subject_column) %>%
-      filter(.data[[rater_column_x]] == i) %>%
-      filter(.data[[rater_column_x]] != .data[[rater_column_y]]) %>%
-      select(-all_of(subject_column),
-             -all_of(rater_column_y),
-             -all_of(rater_column_x))
+      dplyr::filter(.data[[rater_column_x]] == i) %>%
+      dplyr::filter(.data[[rater_column_x]] != .data[[rater_column_y]]) %>%
+      dplyr::select(-all_of(subject_column),
+                    -all_of(rater_column_y),
+                    -all_of(rater_column_x))
 
     # turn into a matrix and calcuate percent agreement.
     codings_i_matrix <- as.matrix(codings_i)
 
-    all_pct_agree[[i]] <- tibble(rater = rater_i,
+    all_pct_agree[[i]] <- dplyr::tibble(rater = rater_i,
                                  percent_agree = irr::agree(codings_i_matrix)$value,
                                  n_dbl_coded = nrow(codings_i_matrix))
   }
 
   final <- all_pct_agree %>%
-    bind_rows()
+    dplyr::bind_rows()
 
   return(final)
 }
