@@ -43,20 +43,20 @@ coder_agreement <- function(object_name,
 
     # spin data wide by rater
     subjects_wide <- subjects_i %>%
-      tidyr::pivot_wider(values_from = .data[[coding_column]],
-                  names_from = .data[[rater_column]],
+      tidyr::pivot_wider(values_from = dplyr::all_of(coding_column),
+                  names_from = dplyr::all_of(rater_column),
                   names_prefix = "rater_")
 
     subjects_wide <- subjects_wide %>%
       dplyr::rowwise() %>%
-      mutate(agree = dplyr::n_distinct(dplyr::c_across(dplyr::starts_with("rater_")), na.rm = T) == 1) %>%
+      dplyr::mutate(agree = dplyr::n_distinct(dplyr::c_across(dplyr::starts_with("rater_")), na.rm = T) == 1) %>%
       dplyr::ungroup()
 
     final <- subjects_wide %>%
-      dplyr::summarise(percent_agree = 100 * round(sum(agree) / dplyr::n(), 2))
+      dplyr::summarise(percent_agree = 100 * round(sum(.data[['agree']]) / dplyr::n(), 2))
 
-    all_pct_agree[[i]] <- tibble(rater = i,
-                                 percent_agree = dplyr::pull(final, percent_agree),
+    all_pct_agree[[i]] <- dplyr::tibble(rater = i,
+                                 percent_agree = dplyr::pull(final, .data[['percent_agree']]),
                                  n_multi_coded = nrow(subjects_wide))
   }
 

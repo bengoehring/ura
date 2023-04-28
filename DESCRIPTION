@@ -13,4 +13,13 @@ RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
 Imports: 
-    magrittr
+    dplyr,
+    irr,
+    magrittr,
+    rlang (>= 0.4.11),
+    stringr,
+    tidyr
+Suggests: 
+    roxygen2,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

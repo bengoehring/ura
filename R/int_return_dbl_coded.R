@@ -77,6 +77,7 @@ int_return_dbl_coded <- function(in_object_name,
       dplyr::mutate('{in_rater_column}' := new_coding) %>%
       dplyr::select(-new_coding)
 
+  }
 
   if(!is.numeric(in_object_name[,in_coding_column])) {
 
@@ -86,7 +87,7 @@ int_return_dbl_coded <- function(in_object_name,
       dplyr::ungroup()
 
     print_new_ids <- dbl_coded_df %>%
-      dplyr::select(all_of(in_coding_column),
+      dplyr::select(dplyr::all_of(in_coding_column),
                     new_coding) %>%
       dplyr::distinct() %>%
       dplyr::arrange(new_coding) %>%
@@ -102,6 +103,13 @@ int_return_dbl_coded <- function(in_object_name,
       dplyr::select(-new_coding)
   }
 
+
+  # drop any additional columns
+  dbl_coded_df <- dbl_coded_df %>%
+    dplyr::select(all_of(c(c(in_rater_column,
+                      in_subject_column,
+                      in_coding_column)))) %>%
+    dplyr::arrange(.data[[in_rater_column]])
 
   return(dbl_coded_df)
 }
