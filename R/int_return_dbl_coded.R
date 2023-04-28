@@ -1,11 +1,11 @@
 #' int_return_dbl_coded
 #'
 #' \code{int_return_dbl_coded} An internal function to return the subjects double-coded by the raters. It runs a number of checks along the way
-#' @param in_in_object_name A dataframe or tibble containing raters' codings. Each row should contain the assigned coding
+#' @param in_object_name A dataframe or tibble containing raters' codings. Each row should contain the assigned coding
 #' from a given rater-subject.
-#' @param in_in_rater_column The name of the column containing the raters' names as a string.
-#' @param in_in_subject_column The name of the column containing the names of the subjects being coded as a string.
-#' @param in_in_coding_column The name of the column containing the codings assigned by the raters as a string.
+#' @param in_rater_column The name of the column containing the raters' names as a string.
+#' @param in_subject_column The name of the column containing the names of the subjects being coded as a string.
+#' @param in_coding_column The name of the column containing the codings assigned by the raters as a string.
 #' @author Benjamin Goehring <bengoehr@umich.edu>
 
 int_return_dbl_coded <- function(in_object_name,
@@ -62,10 +62,10 @@ int_return_dbl_coded <- function(in_object_name,
       dplyr::ungroup()
 
     print_new_ids_rater <- dbl_coded_df %>%
-      dplyr::select(all_of(in_rater_column),
-                    new_coding) %>%
+      dplyr::select(dplyr::all_of(in_rater_column),
+                    dplyr::all_of('new_coding')) %>%
       dplyr::distinct() %>%
-      dplyr::arrange(new_coding) %>%
+      dplyr::arrange(.data[['new_coding']]) %>%
       as.data.frame()
 
     cat('Recoding the rater column to be numeric. Here is the crosswalk of the recoded values:\n\n')
@@ -74,8 +74,8 @@ int_return_dbl_coded <- function(in_object_name,
     cat("Please either make note of this recoding or create your own crosswalk.\n\n")
 
     dbl_coded_df <- dbl_coded_df %>%
-      dplyr::mutate('{in_rater_column}' := new_coding) %>%
-      dplyr::select(-new_coding)
+      dplyr::mutate('{in_rater_column}' := .data[['new_coding']]) %>%
+      dplyr::select(-dplyr::all_of('new_coding'))
 
   }
 
@@ -88,9 +88,9 @@ int_return_dbl_coded <- function(in_object_name,
 
     print_new_ids <- dbl_coded_df %>%
       dplyr::select(dplyr::all_of(in_coding_column),
-                    new_coding) %>%
+                    dplyr::all_of('new_coding')) %>%
       dplyr::distinct() %>%
-      dplyr::arrange(new_coding) %>%
+      dplyr::arrange(.data[['new_coding']]) %>%
       as.data.frame()
 
     cat('Recoding the coding column to be numeric. Here is the crosswalk of the recoded values:\n\n')
@@ -99,22 +99,19 @@ int_return_dbl_coded <- function(in_object_name,
     cat("Please either make note of this recoding or create your own crosswalk.\n\n")
 
     dbl_coded_df <- dbl_coded_df %>%
-      dplyr::mutate('{in_coding_column}' := new_coding) %>%
-      dplyr::select(-new_coding)
+      dplyr::mutate('{in_coding_column}' := .data[['new_coding']]) %>%
+      dplyr::select(-dplyr::all_of('new_coding'))
   }
 
 
   # drop any additional columns
   dbl_coded_df <- dbl_coded_df %>%
-    dplyr::select(all_of(c(c(in_rater_column,
-                      in_subject_column,
-                      in_coding_column)))) %>%
+    dplyr::select(dplyr::all_of(c(in_rater_column,
+                                  in_subject_column,
+                                  in_coding_column))) %>%
     dplyr::arrange(.data[[in_rater_column]])
 
   return(dbl_coded_df)
 }
-
-#notes: figure out what types the rater, coding, and subject columns need to be.
-
 
 

@@ -36,12 +36,12 @@ irr_stats <- function(object_name,
     dplyr::mutate(generic_rater = stringr::str_c("rater_",
                                            dplyr::row_number())) %>%
     dplyr::ungroup() %>%
-    dplyr::select(-all_of(rater_column)) %>%
-    dplyr::filter(generic_rater %in% c(str_c("rater_", 1:include_n_raters))) %>%
-    tidyr::pivot_wider(names_from = generic_rater,
+    dplyr::select(-dplyr::all_of(rater_column)) %>%
+    dplyr::filter(.data[['generic_rater']] %in% c(stringr::str_c("rater_", 1:include_n_raters))) %>%
+    tidyr::pivot_wider(names_from = dplyr::all_of('generic_rater'),
                        values_from = dplyr::all_of(coding_column))
 
-  dbl_coded_df_wide <- na.omit(dbl_coded_df_wide)
+  dbl_coded_df_wide <- stats::na.omit(dbl_coded_df_wide)
 
   # turn into matrix for irr stat functions
   dbl_coded_df_matrix <- dbl_coded_df_wide %>%
@@ -49,7 +49,7 @@ irr_stats <- function(object_name,
     as.matrix()
 
   # return irr stats depending on number of comparisons and whether ratings are binary or not
-  if(include_n_raters == 2 & length(unique(pull(dbl_coded_df, .data[[coding_column]]))) == 2) {
+  if(include_n_raters == 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) == 2) {
     all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
                            "Cohen's Kappa" = irr::kappa2(dbl_coded_df_matrix)$value,
                            "Maxwell's RE" = irr::maxwell(dbl_coded_df_matrix)$value,
@@ -58,7 +58,7 @@ irr_stats <- function(object_name,
 
     cat("\n\nReturning IRR statistics applicable for comparing 2 coders (see include_n_raters) and binary values.\n\n")
 
-  } else if(include_n_raters > 2 & length(unique(pull(dbl_coded_df, .data[[coding_column]]))) == 2) {
+  } else if(include_n_raters > 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) == 2) {
 
     all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
                            "Krippendorf's Alpha" = irr::kripp.alpha(t(dbl_coded_df_matrix),
@@ -66,7 +66,7 @@ irr_stats <- function(object_name,
 
     cat("\n\nReturning IRR statistics applicable for comparing >2 coders (see include_n_raters) and binary values.\n\n")
 
-  } else if(include_n_raters == 2 & length(unique(pull(dbl_coded_df, .data[[coding_column]]))) > 2) {
+  } else if(include_n_raters == 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) > 2) {
 
     all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
                            "Cohen's Kappa" = irr::kappa2(dbl_coded_df_matrix)$value,
@@ -75,7 +75,7 @@ irr_stats <- function(object_name,
 
     cat("\n\nReturning IRR statistics applicable for comparing 2 coders (see include_n_raters) and non-binary values.\n\n")
 
-  } else if(include_n_raters > 2 & length(unique(pull(dbl_coded_df, .data[[coding_column]]))) > 2) {
+  } else if(include_n_raters > 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) > 2) {
 
     all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
                            "Krippendorf's Alpha" = irr::kripp.alpha(t(dbl_coded_df_matrix),
@@ -83,12 +83,12 @@ irr_stats <- function(object_name,
     cat("\n\nReturning IRR statistics applicable for comparing >2 coders (see include_n_raters) and non-binary values.\n\n")
   }
 
-  all_statistics_df <- dplyr::as_tibble(all_statistics) %>%
+  all_statistics_df <- tibble::as_tibble(all_statistics) %>%
     tidyr::pivot_longer(cols = dplyr::everything(),
                         names_to = 'statistic') %>%
-    dplyr::mutate(value = round(value,
+    dplyr::mutate(value = round(.data[['value']],
                                 round_digits)) %>%
-    dplyr::filter(statistic %in% stats_to_include) %>%
+    dplyr::filter(.data[['statistic']] %in% stats_to_include) %>%
     dplyr::mutate(n_subjects = nrow(dbl_coded_df_matrix))
 
   return(all_statistics_df)
