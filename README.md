@@ -8,11 +8,21 @@
 [![R-CMD-check](https://github.com/bengoehring/ura/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bengoehring/ura/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of ura is to …
+`ura` provides a set of tools for calculating inter-rater reliability
+(IRR) statistics by rater, allowing for real-time monitoring of rater
+progress and accuracy. While far from the first package to provide users
+access to IRR diagnostics (e.g.,
+[irr](https://cran.r-project.org/web/packages/irr/irr.pdf)), `ura` aims
+to help researchers and supervisors efficiently monitor the coding
+progress of their research assistants. Please refer to the [associated
+working
+paper](https://bengoehring.github.io/files/perspectives-paper.pdf) for
+additional information about effectively monitoring research assistants’
+progress.
 
 ## Installation
 
-You can install the development version of ura from
+`ura` is currently only available on GitHub. You can install it from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -20,19 +30,11 @@ You can install the development version of ura from
 devtools::install_github("bengoehring/ura")
 ```
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
+## Usage Examples
 
 ``` r
 library(ura)
 ## basic example code
-```
-
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
 summary(cars)
 #>      speed           dist       
 #>  Min.   : 4.0   Min.   :  2.00  
@@ -42,16 +44,3 @@ summary(cars)
 #>  3rd Qu.:19.0   3rd Qu.: 56.00  
 #>  Max.   :25.0   Max.   :120.00
 ```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
