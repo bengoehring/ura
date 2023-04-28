@@ -44,5 +44,19 @@ irr_stats(test_9_missing,
           coding_column = 'coverage',
           include_n_raters = 3)
 
+irr_stats(anxiety,
+          rater_column = 'rater_id',
+          subject_column = 'subject_id',
+          coding_column = 'anxiety_level',
+          include_n_raters = 3)
+
+irr_stats(diagnoses,
+          rater_column = 'rater_id',
+          subject_column = 'patient_id',
+          coding_column = 'diagnosis',
+          include_n_raters = 9)
+
+
+
 
 

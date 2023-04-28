@@ -8,7 +8,8 @@
 #' @param coding_column The name of the column containing the codings assigned by the raters as a string.
 #' @param round_digits The number of decimals to round the IRR values by. The default is 2.
 #' @param include_n_raters Among subjects coded by more than one rater, across how many raters should IRR statistics be computed?
-#' The default is two, which means that only subjects coded by two and only two raters are included for IRR stats. This is done
+#' For instance, if include_n_raters = 2, only subjects coded by two and only two raters are included for IRR stats. If all of your raters coded
+#' all of your subjects, be sure to set include_n_raters to the number of raters in your dataset. This is done
 #' to handle missing values and the likelihood that, in many settings, subjects might not be coded by the same number of raters.
 #' @param stats_to_include The IRR statistics to include in the output. See the documentation of the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package} for more information about the specific statistics.
 #' @author Benjamin Goehring <bengoehr@umich.edu>
@@ -47,37 +48,49 @@ irr_stats <- function(object_name,
     dplyr::select(-dplyr::all_of(subject_column)) %>%
     as.matrix()
 
-  # return irr stats
-  if(include_n_raters == 2) {
+  # return irr stats depending on number of comparisons and whether ratings are binary or not
+  if(include_n_raters == 2 & length(unique(pull(dbl_coded_df, .data[[coding_column]]))) == 2) {
     all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
                            "Cohen's Kappa" = irr::kappa2(dbl_coded_df_matrix)$value,
                            "Maxwell's RE" = irr::maxwell(dbl_coded_df_matrix)$value,
                            "Krippendorf's Alpha" = irr::kripp.alpha(t(dbl_coded_df_matrix),
                                                                     method = 'nominal')$value)
-    all_statistics_df <- dplyr::as_tibble(all_statistics) %>%
-      tidyr::pivot_longer(cols = dplyr::everything(),
-                          names_to = 'statistic') %>%
-      dplyr::mutate(value = round(value,
-                           2)) %>%
-      dplyr::filter(statistic %in% stats_to_include) %>%
-      dplyr::mutate(n_subjects = nrow(dbl_coded_df_matrix))
-  } else if(include_n_raters > 2) {
+
+    cat("\n\nReturning IRR statistics applicable for comparing 2 coders (see include_n_raters) and binary values.\n\n")
+
+  } else if(include_n_raters > 2 & length(unique(pull(dbl_coded_df, .data[[coding_column]]))) == 2) {
 
     all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
-                           #"Cohen's Kappa" = irr::kappa2(dbl_coded_df_matrix)$value,
-                           #"Maxwell's RE" = irr::maxwell(dbl_coded_df_matrix)$value,
                            "Krippendorf's Alpha" = irr::kripp.alpha(t(dbl_coded_df_matrix),
                                                                     method = 'nominal')$value)
-    all_statistics_df <- dplyr::as_tibble(all_statistics) %>%
-      tidyr::pivot_longer(cols = dplyr::everything(),
-                          names_to = 'statistic') %>%
-      dplyr::mutate(value = round(value,
-                           2)) %>%
-      dplyr::filter(statistic %in% stats_to_include) %>%
-      dplyr::mutate(n_subjects = nrow(dbl_coded_df_matrix))
-  } else {
-    stop()
+
+    cat("\n\nReturning IRR statistics applicable for comparing >2 coders (see include_n_raters) and binary values.\n\n")
+
+  } else if(include_n_raters == 2 & length(unique(pull(dbl_coded_df, .data[[coding_column]]))) > 2) {
+
+    all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
+                           "Cohen's Kappa" = irr::kappa2(dbl_coded_df_matrix)$value,
+                           "Krippendorf's Alpha" = irr::kripp.alpha(t(dbl_coded_df_matrix),
+                                                                    method = 'nominal')$value)
+
+    cat("\n\nReturning IRR statistics applicable for comparing 2 coders (see include_n_raters) and non-binary values.\n\n")
+
+  } else if(include_n_raters > 2 & length(unique(pull(dbl_coded_df, .data[[coding_column]]))) > 2) {
+
+    all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
+                           "Krippendorf's Alpha" = irr::kripp.alpha(t(dbl_coded_df_matrix),
+                                                                    method = 'nominal')$value)
+    cat("\n\nReturning IRR statistics applicable for comparing >2 coders (see include_n_raters) and non-binary values.\n\n")
   }
+
+  all_statistics_df <- dplyr::as_tibble(all_statistics) %>%
+    tidyr::pivot_longer(cols = dplyr::everything(),
+                        names_to = 'statistic') %>%
+    dplyr::mutate(value = round(value,
+                                round_digits)) %>%
+    dplyr::filter(statistic %in% stats_to_include) %>%
+    dplyr::mutate(n_subjects = nrow(dbl_coded_df_matrix))
+
   return(all_statistics_df)
 }
 

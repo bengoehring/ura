@@ -50,9 +50,33 @@ int_return_dbl_coded <- function(in_object_name,
   if(nrow(dbl_coded_df) == 0) {
     stop("There are no subjects coded by more than one rater. Therefore, IRR stats cannot be computed. ")
   }
-  if(!is.numeric(in_object_name[,in_subject_column]) | !is.numeric(in_object_name[,in_rater_column])) {
-    stop("Either the subject or the rater column is not numeric.")
+  if(!is.numeric(in_object_name[,in_subject_column])) {
+    stop("The subject column is not numeric -- please recode")
   }
+
+  if(!is.numeric(in_object_name[,in_rater_column])) {
+
+    dbl_coded_df <- dbl_coded_df %>%
+      dplyr::group_by(.data[[in_rater_column]]) %>%
+      dplyr::mutate(new_coding = dplyr::cur_group_id()) %>%
+      dplyr::ungroup()
+
+    print_new_ids_rater <- dbl_coded_df %>%
+      dplyr::select(all_of(in_rater_column),
+                    new_coding) %>%
+      dplyr::distinct() %>%
+      dplyr::arrange(new_coding) %>%
+      as.data.frame()
+
+    cat('Recoding the rater column to be numeric. Here is the crosswalk of the recoded values:\n\n')
+    print(print_new_ids_rater)
+    cat("\n\n")
+    cat("Please either make note of this recoding or create your own crosswalk.\n\n")
+
+    dbl_coded_df <- dbl_coded_df %>%
+      dplyr::mutate('{in_rater_column}' := new_coding) %>%
+      dplyr::select(-new_coding)
+
 
   if(!is.numeric(in_object_name[,in_coding_column])) {
 
