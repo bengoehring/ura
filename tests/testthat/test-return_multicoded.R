@@ -36,3 +36,5 @@ test_that("Number of rows in final output is correct.", {
                          nrow(multi_output))
 
 })
+
+

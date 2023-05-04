@@ -9,10 +9,9 @@ irr_stats(
   rater_column,
   subject_column,
   coding_column,
-  include_n_raters,
+  include_n_raters = NULL,
   round_digits = 2,
-  stats_to_include = c("Percentage agreement", "Cohen's Kappa", "Maxwell's RE",
-    "Krippendorf's Alpha")
+  stats_to_include = c("Percentage agreement", "Krippendorf's Alpha")
 )
 }
 \arguments{
@@ -32,7 +31,7 @@ to handle missing values and the likelihood that, in many settings, subjects mig
 
 \item{round_digits}{The number of decimals to round the IRR values by. The default is 2.}
 
-\item{stats_to_include}{The IRR statistics to include in the output. See the documentation of the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package} for more information about the specific statistics.}
+\item{stats_to_include}{The IRR statistics to include in the output. Currently only supports percent agreement and Krippendorf's Alpha. See the documentation of the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package} for more information about specific IRR statistics.}
 }
 \description{
 \code{irr_stats} Calculates a variety of IRR statistics.

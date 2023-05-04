@@ -38,6 +38,30 @@ int_return_dbl_coded <- function(in_object_name,
     stop("There are duplicates in the dataframe. Please be sure that there are no duplicate rater-subject observations.")
   }
 
+  # NA warnings
+  if(sum(is.na(dplyr::pull(in_object_name, .data[[in_rater_column]]))) > 0) {
+    in_object_name <- in_object_name %>%
+      dplyr::filter(!.data[[in_rater_column]])
+
+    warning("There are NA values in the rater column. Removing those rows.")
+  }
+
+  if(sum(is.na(dplyr::pull(in_object_name, .data[[in_subject_column]]))) > 0) {
+    in_object_name <- in_object_name %>%
+      dplyr::filter(!.data[[in_subject_column]])
+
+    warning("There are NA values in the subject column. Removing those rows.")
+  }
+
+  if(sum(is.na(dplyr::pull(in_object_name, .data[[in_coding_column]]))) > 0) {
+    in_object_name <- in_object_name %>%
+      dplyr::filter(!.data[[in_coding_column]])
+
+    warning("There are NA values in the coding column. Removing those rows.")
+  }
+
+
+
   # filter input data down to only the multi-coded observations.
   in_object_name <- as.data.frame(in_object_name)
 
@@ -48,7 +72,7 @@ int_return_dbl_coded <- function(in_object_name,
     dplyr::ungroup()
 
   if(nrow(dbl_coded_df) == 0) {
-    stop("There are no subjects coded by more than one rater. Therefore, IRR stats cannot be computed. ")
+    stop("There are no subjects coded by more than one rater. Therefore, IRR stats cannot be computed.")
   }
   if(!is.numeric(in_object_name[,in_subject_column])) {
     stop("The subject column is not numeric -- please recode")
@@ -68,11 +92,13 @@ int_return_dbl_coded <- function(in_object_name,
       dplyr::arrange(.data[['new_coding']]) %>%
       as.data.frame()
 
-    cat('Recoding the rater column to be numeric. Here is the crosswalk of the recoded values:\n\n')
-    print(print_new_ids_rater)
-    cat("\n\n")
-    cat("Please either make note of this recoding or create your own crosswalk.\n\n")
-
+    # print to console if function calling internal function is not irr_stats
+    if(stringr::str_detect(deparse(sys.calls()[[sys.nframe()-1]])[1], "irr_stats", negate = T)) {
+        cat('Recoding the rater column to be numeric. Here is the crosswalk of the recoded values:\n\n')
+        print(print_new_ids_rater)
+        cat("\n\n")
+        cat("Please either make note of this recoding or create your own crosswalk.\n\n")
+    }
     dbl_coded_df <- dbl_coded_df %>%
       dplyr::mutate('{in_rater_column}' := .data[['new_coding']]) %>%
       dplyr::select(-dplyr::all_of('new_coding'))
@@ -92,11 +118,6 @@ int_return_dbl_coded <- function(in_object_name,
       dplyr::distinct() %>%
       dplyr::arrange(.data[['new_coding']]) %>%
       as.data.frame()
-
-    cat('Recoding the coding column to be numeric. Here is the crosswalk of the recoded values:\n\n')
-    print(print_new_ids)
-    cat("\n\n")
-    cat("Please either make note of this recoding or create your own crosswalk.\n\n")
 
     dbl_coded_df <- dbl_coded_df %>%
       dplyr::mutate('{in_coding_column}' := .data[['new_coding']]) %>%

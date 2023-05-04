@@ -11,24 +11,28 @@
 #' For instance, if include_n_raters = 2, only subjects coded by two and only two raters are included for IRR stats. If all of your raters coded
 #' all of your subjects, be sure to set include_n_raters to the number of raters in your dataset. This is done
 #' to handle missing values and the likelihood that, in many settings, subjects might not be coded by the same number of raters.
-#' @param stats_to_include The IRR statistics to include in the output. See the documentation of the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package} for more information about the specific statistics.
+#' @param stats_to_include The IRR statistics to include in the output. Currently only supports percent agreement and Krippendorf's Alpha. See the documentation of the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package} for more information about specific IRR statistics.
 #' @author Benjamin Goehring <bengoehr@umich.edu>
 #' @export
 irr_stats <- function(object_name,
                       rater_column,
                       subject_column,
                       coding_column,
-                      include_n_raters,
+                      include_n_raters = NULL,
                       round_digits = 2,
                       stats_to_include = c("Percentage agreement",
-                                           "Cohen's Kappa",
-                                           "Maxwell's RE",
                                            "Krippendorf's Alpha")) {
   # run checks and return multi-coded subjects
   dbl_coded_df <- int_return_dbl_coded(in_object_name = object_name,
                                        in_rater_column = rater_column,
                                        in_subject_column = subject_column,
                                        in_coding_column = coding_column)
+
+  # set default for include_n_raters
+  if(is.null(include_n_raters)) {
+    include_n_raters <- length(unique(dplyr::pull(dbl_coded_df,
+                                                  .data[[rater_column]])))
+  }
 
   # widen multi-coded observations and create generic rater columns
   dbl_coded_df_wide <- dbl_coded_df %>%
@@ -51,36 +55,22 @@ irr_stats <- function(object_name,
   # return irr stats depending on number of comparisons and whether ratings are binary or not
   if(include_n_raters == 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) == 2) {
     all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
-                           "Cohen's Kappa" = irr::kappa2(dbl_coded_df_matrix)$value,
-                           "Maxwell's RE" = irr::maxwell(dbl_coded_df_matrix)$value,
-                           "Krippendorf's Alpha" = irr::kripp.alpha(t(dbl_coded_df_matrix),
-                                                                    method = 'nominal')$value)
-
-    cat("\n\nReturning IRR statistics applicable for comparing 2 coders (see include_n_raters) and binary values.\n\n")
+                           "Krippendorf's Alpha" = irr::kripp.alpha(dbl_coded_df_matrix)$value)
 
   } else if(include_n_raters > 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) == 2) {
 
     all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
-                           "Krippendorf's Alpha" = irr::kripp.alpha(t(dbl_coded_df_matrix),
-                                                                    method = 'nominal')$value)
-
-    cat("\n\nReturning IRR statistics applicable for comparing >2 coders (see include_n_raters) and binary values.\n\n")
+                           "Krippendorf's Alpha" = irr::kripp.alpha(dbl_coded_df_matrix)$value)
 
   } else if(include_n_raters == 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) > 2) {
 
     all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
-                           "Cohen's Kappa" = irr::kappa2(dbl_coded_df_matrix)$value,
-                           "Krippendorf's Alpha" = irr::kripp.alpha(t(dbl_coded_df_matrix),
-                                                                    method = 'nominal')$value)
-
-    cat("\n\nReturning IRR statistics applicable for comparing 2 coders (see include_n_raters) and non-binary values.\n\n")
+                           "Krippendorf's Alpha" = irr::kripp.alpha(dbl_coded_df_matrix)$value)
 
   } else if(include_n_raters > 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) > 2) {
 
     all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
-                           "Krippendorf's Alpha" = irr::kripp.alpha(t(dbl_coded_df_matrix),
-                                                                    method = 'nominal')$value)
-    cat("\n\nReturning IRR statistics applicable for comparing >2 coders (see include_n_raters) and non-binary values.\n\n")
+                           "Krippendorf's Alpha" = irr::kripp.alpha(dbl_coded_df_matrix)$value)
   }
 
   all_statistics_df <- tibble::as_tibble(all_statistics) %>%
