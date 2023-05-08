@@ -1,6 +1,6 @@
-#' coder_agreement
+#' rater_agreement
 #'
-#' \code{coder_agreement} Calculates the percent agreement between each rater and the other raters who coded the same subjects.
+#' \code{rater_agreement} Calculates the percent agreement between each rater and the other raters who coded the same subjects.
 #' @param object_name A dataframe or tibble containing raters' codings. Each row should contain the assigned coding
 #' from a given rater-subject.
 #' @param rater_column The name of the column containing the raters' names as a string.
@@ -11,7 +11,7 @@
 #' @author Benjamin Goehring <bengoehr@umich.edu>
 #' @export
 
-coder_agreement <- function(object_name,
+rater_agreement <- function(object_name,
                             rater_column,
                             subject_column,
                             coding_column) {

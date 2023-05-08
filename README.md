@@ -95,22 +95,22 @@ in the `n_subjects` column.
 
 ### Percentage Agreement by Rater
 
-The `coder_agreement()` function is the key method for monitoring the
+The `rater_agreement()` function is the key method for monitoring the
 accuracy and progress of raters. While `irr_stats()` provides pooled IRR
-statistics across all raters, `coder_agreement()` provides the percent
+statistics across all raters, `rater_agreement()` provides the percent
 share of a given raters’ codings that agree with other raters’ codings.
 In other words, it offers supervisors a method for checking the relative
 accuracy of each rater in real time. Since interventions in coding
 procedures should be used sparingly, I suggest taking a look at the
 working paper linked above for more information about when and why to
-intervene based on information gleaned from `coder_agreement()`:
+intervene based on information gleaned from `rater_agreement()`:
 
 In the snippet below, all raters have the same percent agreement: 17%.
 That is because, as implied by the n_multi_coded column, every rater
 codes every subject in the diagnoses dataset.
 
 ``` r
-coder_agreement(diagnoses,
+rater_agreement(diagnoses,
                 rater_column = 'rater_id',
                 subject_column = 'patient_id',
                 coding_column = 'diagnosis')
@@ -152,7 +152,7 @@ Here, some subjects are coded by multiple raters while others are coded
 by a single rater. As a result:
 
 ``` r
-coder_agreement(example_data,
+rater_agreement(example_data,
                 rater_column = 'rater',
                 subject_column = 'subject',
                 coding_column = 'coding')

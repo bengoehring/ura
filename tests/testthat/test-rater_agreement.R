@@ -18,7 +18,7 @@ test_that("Percent agreement values are correct.", {
     3,	8,	1,	0,	NA,	100,
   )
 
-  test_data_1_agree <- ura::coder_agreement(test_data_1,
+  test_data_1_agree <- ura::rater_agreement(test_data_1,
                                             rater_column = 'rater',
                                             subject_column = 'subject',
                                             coding_column = 'coding')
