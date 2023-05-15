@@ -49,7 +49,8 @@ rater_agreement <- function(object_name,
 
     subjects_wide <- subjects_wide %>%
       dplyr::rowwise() %>%
-      dplyr::mutate(agree = dplyr::n_distinct(dplyr::c_across(dplyr::starts_with("rater_")), na.rm = T) == 1) %>%
+      dplyr::mutate(agree = dplyr::n_distinct(dplyr::c_across(dplyr::starts_with("rater_")),
+                                              na.rm = T) == 1) %>%
       dplyr::ungroup()
 
     final <- subjects_wide %>%
@@ -65,7 +66,8 @@ rater_agreement <- function(object_name,
 
 
   final <- all_pct_agree %>%
-    dplyr::bind_rows()
+    dplyr::bind_rows() %>%
+    dplyr::arrange(dplyr::desc(.data[['percent_agree']]))
 
   return(final)
 }

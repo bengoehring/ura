@@ -1,6 +1,8 @@
 ## code to prepare diagnoses dataset goes here
 
 # diagnoses dataset -- cleaning this up and making it long
+#library(irr)
+#library(tidyverse)
 data("diagnoses")
 diagnoses_long <- diagnoses %>%
   mutate(patient_id = row_number()) %>%
@@ -10,9 +12,10 @@ diagnoses_long <- diagnoses %>%
   mutate(rater_id = as.numeric(str_remove(rater_id, 'rater'))) %>%
   mutate(diagnosis = str_squish(str_to_lower(str_remove(diagnosis,
                                                         "^\\d{1}\\.\\s")))) %>%
-  mutate(diagnosis = as.factor(diagnosis)) %>%
+  mutate(diagnosis = as.numeric(as.factor(diagnosis))) %>%
   mutate(rater_id = as.numeric(rater_id)) %>%
-  mutate(patient_id = as.numeric(patient_id))
+  mutate(patient_id = as.numeric(patient_id)) %>%
+  mutate()
 
 
 diagnoses <- diagnoses_long

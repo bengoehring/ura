@@ -7,10 +7,6 @@
 #' @param subject_column The name of the column containing the names of the subjects being coded as a string.
 #' @param coding_column The name of the column containing the codings assigned by the raters as a string.
 #' @param round_digits The number of decimals to round the IRR values by. The default is 2.
-#' @param include_n_raters Among subjects coded by more than one rater, across how many raters should IRR statistics be computed?
-#' For instance, if include_n_raters = 2, only subjects coded by two and only two raters are included for IRR stats. If all of your raters coded
-#' all of your subjects, be sure to set include_n_raters to the number of raters in your dataset. This is done
-#' to handle missing values and the likelihood that, in many settings, subjects might not be coded by the same number of raters.
 #' @param stats_to_include The IRR statistics to include in the output. Currently only supports percent agreement and Krippendorf's Alpha. See the documentation of the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package} for more information about specific IRR statistics.
 #' @author Benjamin Goehring <bengoehr@umich.edu>
 #' @export
@@ -28,58 +24,39 @@ irr_stats <- function(object_name,
                                        in_subject_column = subject_column,
                                        in_coding_column = coding_column)
 
-  # set default for include_n_raters
-  if(is.null(include_n_raters)) {
-    include_n_raters <- length(unique(dplyr::pull(dbl_coded_df,
-                                                  .data[[rater_column]])))
-  }
-
-  # widen multi-coded observations and create generic rater columns
+  # calculate the percent agreement, omitting NA values
   dbl_coded_df_wide <- dbl_coded_df %>%
-    dplyr::group_by(.data[[subject_column]]) %>%
-    dplyr::mutate(generic_rater = stringr::str_c("rater_",
-                                           dplyr::row_number())) %>%
-    dplyr::ungroup() %>%
+    tidyr::pivot_wider(names_from = dplyr::all_of(rater_column),
+                       values_from = dplyr::all_of(coding_column),
+                       names_prefix = "rater_") %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(agree = dplyr::n_distinct(dplyr::c_across(dplyr::starts_with("rater_")),
+                                            na.rm = T) == 1) %>%
+    dplyr::ungroup()
+
+  percent_agree <- 100 * (sum(dbl_coded_df_wide$agree) / nrow(dbl_coded_df_wide))
+  percent_agree_n_subs <- nrow(dbl_coded_df_wide)
+
+  # calculate the Krippendorf alpha. Note the different structure of the input
+  #   dataset.
+  kripp_matrix <- dbl_coded_df %>%
+    tidyr::pivot_wider(names_from = dplyr::all_of(subject_column),
+                       values_from = dplyr::all_of(coding_column),
+                       names_prefix = "subject_") %>%
     dplyr::select(-dplyr::all_of(rater_column)) %>%
-    dplyr::filter(.data[['generic_rater']] %in% c(stringr::str_c("rater_", 1:include_n_raters))) %>%
-    tidyr::pivot_wider(names_from = dplyr::all_of('generic_rater'),
-                       values_from = dplyr::all_of(coding_column))
-
-  dbl_coded_df_wide <- stats::na.omit(dbl_coded_df_wide)
-
-  # turn into matrix for irr stat functions
-  dbl_coded_df_matrix <- dbl_coded_df_wide %>%
-    dplyr::select(-dplyr::all_of(subject_column)) %>%
     as.matrix()
 
-  # return irr stats depending on number of comparisons and whether ratings are binary or not
-  if(include_n_raters == 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) == 2) {
-    all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
-                           "Krippendorf's Alpha" = irr::kripp.alpha(dbl_coded_df_matrix)$value)
+  kripp_alpha <- irr::kripp.alpha(kripp_matrix)$value
+  kripp_alpha_n_subs <- irr::kripp.alpha(kripp_matrix)$subjects
 
-  } else if(include_n_raters > 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) == 2) {
-
-    all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
-                           "Krippendorf's Alpha" = irr::kripp.alpha(dbl_coded_df_matrix)$value)
-
-  } else if(include_n_raters == 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) > 2) {
-
-    all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
-                           "Krippendorf's Alpha" = irr::kripp.alpha(dbl_coded_df_matrix)$value)
-
-  } else if(include_n_raters > 2 & length(unique(dplyr::pull(dbl_coded_df, .data[[coding_column]]))) > 2) {
-
-    all_statistics <- list("Percentage agreement" = irr::agree(dbl_coded_df_matrix)$value,
-                           "Krippendorf's Alpha" = irr::kripp.alpha(dbl_coded_df_matrix)$value)
-  }
-
-  all_statistics_df <- tibble::as_tibble(all_statistics) %>%
-    tidyr::pivot_longer(cols = dplyr::everything(),
-                        names_to = 'statistic') %>%
+  # save final dataset
+  all_statistics_df <- tibble::tribble(
+    ~statistic, ~value, ~n_subjects,
+    "Percentage agreement", percent_agree, percent_agree_n_subs,
+    "Krippendorf's Alpha", kripp_alpha, kripp_alpha_n_subs
+  ) %>%
     dplyr::mutate(value = round(.data[['value']],
-                                round_digits)) %>%
-    dplyr::filter(.data[['statistic']] %in% stats_to_include) %>%
-    dplyr::mutate(n_subjects = nrow(dbl_coded_df_matrix))
+                                round_digits))
 
   return(all_statistics_df)
 }
