@@ -1,6 +1,6 @@
 #' irr_stats
 #'
-#' \code{irr_stats} Calculates a variety of IRR statistics.
+#' \code{irr_stats} calculates a variety of IRR statistics.
 #' @param object_name A dataframe or tibble containing raters' codings. Each row should contain the assigned coding
 #' from a given rater-subject.
 #' @param rater_column The name of the column containing the raters' names as a string.
@@ -14,7 +14,6 @@ irr_stats <- function(object_name,
                       rater_column,
                       subject_column,
                       coding_column,
-                      include_n_raters = NULL,
                       round_digits = 2,
                       stats_to_include = c("Percentage agreement",
                                            "Krippendorf's Alpha")) {

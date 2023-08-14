@@ -1,6 +1,6 @@
 #' rater_agreement
 #'
-#' \code{rater_agreement} Calculates the percent agreement between each rater and the other raters who coded the same subjects.
+#' \code{rater_agreement} calculates the percent agreement between each rater and the other raters who coded the same subjects.
 #' @param object_name A dataframe or tibble containing raters' codings. Each row should contain the assigned coding
 #' from a given rater-subject.
 #' @param rater_column The name of the column containing the raters' names as a string.

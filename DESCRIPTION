@@ -17,11 +17,11 @@ Imports:
     irr,
     magrittr,
     rlang (>= 0.4.11),
-    stringr,
     tibble,
     tidyr
 Suggests: 
     roxygen2,
+    stringr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 URL: https://github.com/bengoehring/ura

@@ -21,7 +21,7 @@ A tibble where each row notes the percent agreement between rater i and all othe
 The n_dbl_coded column notes how many subjects have been coded by rater i that have also been coded by other raters.
 }
 \description{
-\code{rater_agreement} Calculates the percent agreement between each rater and the other raters who coded the same subjects.
+\code{rater_agreement} calculates the percent agreement between each rater and the other raters who coded the same subjects.
 }
 \author{
 Benjamin Goehring <bengoehr@umich.edu>

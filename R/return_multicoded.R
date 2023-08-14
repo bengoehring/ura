@@ -1,6 +1,6 @@
 #' return_multicoded
 #'
-#' \code{return_multicoded} Returns a tibble containing the subjects that are
+#' \code{return_multicoded} returns a tibble containing the subjects that are
 #' coded by >1 rater and thus able to be used for IRR analysis.
 #' @param object_name A dataframe or tibble containing raters' codings. Each row should contain the assigned coding
 #' from a given rater-subject.

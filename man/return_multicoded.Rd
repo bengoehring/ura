@@ -20,7 +20,7 @@ from a given rater-subject.}
 A matrix containing the coding of a given subject for a generic 'coder 1' and 'coder 2'. Coders 1 and 2 do not represent actual coders (e.g., you might have >2). Rather, they are general placeholders used to compare reliability across double-coded subjects.
 }
 \description{
-\code{return_multicoded} Returns a tibble containing the subjects that are
+\code{return_multicoded} returns a tibble containing the subjects that are
 coded by >1 rater and thus able to be used for IRR analysis.
 }
 \author{

@@ -9,7 +9,6 @@ irr_stats(
   rater_column,
   subject_column,
   coding_column,
-  include_n_raters = NULL,
   round_digits = 2,
   stats_to_include = c("Percentage agreement", "Krippendorf's Alpha")
 )
@@ -24,17 +23,12 @@ from a given rater-subject.}
 
 \item{coding_column}{The name of the column containing the codings assigned by the raters as a string.}
 
-\item{include_n_raters}{Among subjects coded by more than one rater, across how many raters should IRR statistics be computed?
-For instance, if include_n_raters = 2, only subjects coded by two and only two raters are included for IRR stats. If all of your raters coded
-all of your subjects, be sure to set include_n_raters to the number of raters in your dataset. This is done
-to handle missing values and the likelihood that, in many settings, subjects might not be coded by the same number of raters.}
-
 \item{round_digits}{The number of decimals to round the IRR values by. The default is 2.}
 
 \item{stats_to_include}{The IRR statistics to include in the output. Currently only supports percent agreement and Krippendorf's Alpha. See the documentation of the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package} for more information about specific IRR statistics.}
 }
 \description{
-\code{irr_stats} Calculates a variety of IRR statistics.
+\code{irr_stats} calculates a variety of IRR statistics.
 }
 \author{
 Benjamin Goehring <bengoehr@umich.edu>
