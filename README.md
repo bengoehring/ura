@@ -86,7 +86,7 @@ A few things to note here. First, the unit of analysis in `diagnoses` is
 rater-subject — that is, each row provides the coding decision of rater
 i for subject j. All data inputted into a `ura` function should be long
 by rater-subject. Second, you will see that the dataframe returned by
-`irr_stats()` notes the number of subjects used to calcuate the given
+`irr_stats()` notes the number of subjects used to calculate the given
 IRR statistic. In the case of diagnoses, this value is equal to the
 number of unique subjects in the dataframe:
 
