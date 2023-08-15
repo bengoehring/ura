@@ -13,7 +13,7 @@
 reliability. While not the first package to provide users access to IRR
 diagnostics (e.g., [irr](https://cran.r-project.org/package=irr)), `ura`
 aims to provide a simple set of tools for quickly monitoring rater
-progress and precision You can use `ura` to, for instance, find the
+progress and precision. You can use `ura` to, for instance, find the
 percentage agreement or Krippendorf’s Alpha of all of the subjects coded
 by your raters. Another helpful use is to calculate percentage agreement
 values by rater, providing an efficient way to monitor the relative
