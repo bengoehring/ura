@@ -25,7 +25,7 @@ from a given rater-subject.}
 
 \item{round_digits}{The number of decimals to round the IRR values by. The default is 2.}
 
-\item{stats_to_include}{The IRR statistics to include in the output. Currently only supports percent agreement and Krippendorf's Alpha. See the documentation of the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package} for more information about specific IRR statistics.}
+\item{stats_to_include}{The IRR statistics to include in the output. Currently only supports percent agreement and Krippendorf's Alpha. See the documentation of the \href{https://cran.r-project.org/package=irr}{irr package} for more information about specific IRR statistics.}
 }
 \value{
 A tibble containing the IRR statistic, the statistic's value, and the number of subjects used to calculate the statistic.

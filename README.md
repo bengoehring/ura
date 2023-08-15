@@ -10,33 +10,46 @@
 
 `ura` provides a set of tools for calculating inter-rater reliability
 (IRR) statistics by rater, allowing for real-time monitoring of rater
-progress and accuracy. While far from the first package to provide users
-access to IRR diagnostics (e.g., the great package
-[irr](https://cran.r-project.org/web/packages/irr/irr.pdf)), `ura` aims
-to provide a simple set of tools for quickly monitoring rater progress
-and accuracy. You can use `ura` to, for instance, find the percentage
-agreement or Krippendorf’s Alpha of all of the subjects coded by your
-raters. Another helpful use is to calculate percentage agreement values
-by coder, providing an efficient way to monitor the relative accuracy of
-your raters.
+reliability. While not the first package to provide users access to IRR
+diagnostics (e.g., [irr](https://cran.r-project.org/package=irr)), `ura`
+aims to provide a simple set of tools for quickly monitoring rater
+progress and precision You can use `ura` to, for instance, find the
+percentage agreement or Krippendorf’s Alpha of all of the subjects coded
+by your raters. Another helpful use is to calculate percentage agreement
+values by rater, providing an efficient way to monitor the relative
+reliability of your raters.
 
-This package complements a [working
-paper](https://bengoehring.github.io/files/perspectives-paper.pdf)
-entitled “Improving Data Collection and Classification: Tips for Working
-with Undergraduate Research Assistants.” Please refer to this paper for
-a more general discussion about training and monitoring student raters.
-Also, be sure to check out the paper for more information about how to
-use the tools in `ura` to monitor progress without compromising
-reproducibility.
+This package complements a
+[paper](https://bengoehring.github.io/files/ps-paper-anon-word-ca.docx),
+conditionally accepted at *PS: Political Science & Politics*, entitled
+“Improving Content Analysis: Tools for Working with Undergraduate
+Research Assistants.” Please refer to this paper for a more general
+discussion about training and monitoring student raters. Also, be sure
+to check out the paper for more information about how to use the tools
+in `ura` to monitor progress without compromising reproducibility.
 
-## Installation
+## Installation Instructions
 
-`ura` is currently only available on GitHub. You can install it from
-[GitHub](https://github.com/) with:
+`ura` is available on CRAN and can be installed using:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("bengoehring/ura")
+install.packages("ura")
+```
+
+You can install the most recent development version of `ura` using the
+`devtools` package. First, you have to install `devtools` using the
+following code. Note that you only have to do this once:
+
+``` r
+if(!require(devtools)) install.packages("devtools")
+```
+
+Then, load `devtools` and use the function `install_github()` to install
+`ura`:
+
+``` r
+library(devtools)
+install_github("bengoehring/ura", dependencies = TRUE)
 ```
 
 ## Usage Examples
@@ -46,21 +59,17 @@ devtools::install_github("bengoehring/ura")
 `ura` can be used to calculate key IRR statistics, such as percentage
 agreement and Krippendorf’s Alpha via the `irr_stats()` function. This
 function largely serves as a wrapper around `irr::agree()` and
-`irr::kripp.alpha()` but aims to simplify users’ lives by only having to
-provide a dataframe and specify key columns.
+`irr::kripp.alpha()` but aims to simplify users’ lives by only requiring
+the user to provide a dataframe and specify key columns.
 
-For instance, here I calculate the percentage agreement and Krippendorf
+For instance, below I calculate the percentage agreement and Krippendorf
 Alpha of the `diagnoses` dataset, which notes the psychiatric
 evaluations of 30 patients from 6 raters. The `diagnoses` dataset is
 included with the `ura` package and is simply a reshaped version of the
-same dataset in the `irr` package.
+dataset with the same name in the `irr` package.
 
 ``` r
 library(ura)
-
-# calculate IRR statistics using built in diagnoses dataset 
-#   note:  this is the same diagnoses dataset as in the irr package, just pivoted
-#   into a long format. 
 
 irr_stats(diagnoses,
           rater_column = 'rater_id',
@@ -70,7 +79,7 @@ irr_stats(diagnoses,
 #>   statistic            value n_subjects
 #>   <chr>                <dbl>      <int>
 #> 1 Percentage agreement 16.7          30
-#> 2 Krippendorf's Alpha   0.07         30
+#> 2 Krippendorf's Alpha   0.43         30
 ```
 
 A few things to note here. First, the unit of analysis in `diagnoses` is
@@ -95,15 +104,15 @@ in the `n_subjects` column.
 
 ### Percentage Agreement by Rater
 
-The `rater_agreement()` function is the key method for monitoring the
-accuracy and progress of raters. While `irr_stats()` provides pooled IRR
-statistics across all raters, `rater_agreement()` provides the percent
-share of a given raters’ codings that agree with other raters’ codings.
-In other words, it offers supervisors a method for checking the relative
-accuracy of each rater in real time. Since interventions in coding
-procedures should be used sparingly, I suggest taking a look at the
-working paper linked above for more information about when and why to
-intervene based on information gleaned from `rater_agreement()`:
+The `rater_agreement()` function is the key method for monitoring rater
+reliability. While `irr_stats()` provides pooled IRR statistics across
+all raters, `rater_agreement()` provides the percent share of a given
+raters’ codings that agree with other raters’ codings. In other words,
+it offers supervisors a method for checking the relative precision of
+each rater in real time. Since interventions in coding procedures should
+be used sparingly, I suggest taking a look at the paper linked above for
+more information about when and why to intervene based on information
+gleaned from `rater_agreement()`.
 
 In the snippet below, all raters have the same percent agreement: 17%.
 That is because, as implied by the n_multi_coded column, every rater
@@ -159,12 +168,12 @@ rater_agreement(example_data,
 #> # A tibble: 3 × 3
 #>   rater percent_agree n_multi_coded
 #>   <int>         <dbl>         <int>
-#> 1     1            50             2
+#> 1     3           100             2
 #> 2     2            75             4
-#> 3     3           100             2
+#> 3     1            50             2
 ```
 
-In terms of interpretation, row 1 shows that of the 2 subjects coded by
+In terms of interpretation, row 3 shows that of the 2 subjects coded by
 rater 1 that were also coded by another rater, rater 1 agrees with the
 other rater(s) 50% of the time. Looking back at example_data, it appears
 that rater 1 agreed with rater 2 on the coding of subject 3 but not on

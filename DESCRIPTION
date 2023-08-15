@@ -1,11 +1,9 @@
 Package: ura
 Type: Package
-Title: Monitor Research Assistant Coding Progress
-Version: 0.1.0
-Authors@R: person("Benjamin", "Goehring", email = "bengoehr@umich.edu", role = c("aut", "cre"))
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: A set of tools for calculating inter-rater reliability (IRR) statistics by rater,
-    allowing for real-time monitoring of rater progress and accuracy.
+Title: Tools for Monitoring Rater Reliability
+Version: 1.0.0
+Authors@R: person("Benjamin", "Goehring", email = "bengoehr@umich.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8450-6065"))
+Description: A set of tools for evaluating and monitoring rater progress and precision. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

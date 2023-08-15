@@ -23,7 +23,7 @@ diagnoses
 \description{
 Data from Fleiss (1971) concerning the psychiatric conditions of thirty patients as
 evaluated by six raters. The data are forked directly
-from the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package}, with the only difference being the shape of the dataset.
+from the \href{https://cran.r-project.org/package=irr}{irr package}, with the only difference being the shape of the dataset.
 }
 \references{
 Fleiss, J.L. (1971). Measuring nominal scale agreement among many raters. Psychological Bulletin,
