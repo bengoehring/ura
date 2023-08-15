@@ -24,7 +24,7 @@ test_that("Percent agreement values are correct.", {
                                             coding_column = 'coding')
 
   # test whether the the number of multi-coded actions per rater matches
-  #   expections set by the multi_coded column in the test dataset.
+  #   expectations set by the multi_coded column in the test dataset.
   check_multi_coded <- test_data_1 %>%
     dplyr::group_by(rater) %>%
     dplyr::summarise(n_multi_coded = sum(multi_coded))
@@ -37,7 +37,7 @@ test_that("Percent agreement values are correct.", {
   testthat::expect_equal(test_multi_coded,
                          nrow(test_data_1_agree))
 
-  # test whether the percent agreement per rater matches the expections set
+  # test whether the percent agreement per rater matches the expectations set
   #   by the percent_agree column in the test dataset.
   check_percent_agree <- test_data_1 %>%
     dplyr::select(rater,

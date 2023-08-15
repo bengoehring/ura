@@ -7,7 +7,34 @@
 #' @param subject_column The name of the column containing the names of the subjects being coded as a string.
 #' @param coding_column The name of the column containing the codings assigned by the raters as a string.
 #' @return A tibble where each row notes the percent agreement between rater i and all other raters who coded the same subjects (percent_agree).
-#' The n_dbl_coded column notes how many subjects have been coded by rater i that have also been coded by other raters.
+#' The n_multi_coded column notes how many subjects have been coded by rater i that have also been coded by other raters (i.e., the denominator for the percent_agree value).
+#' @examples
+#' # Example data: 3 raters assigning binary values to 10 subjects
+#' example_data <- tibble::tribble(
+#'   ~rater,	~subject,	~coding,
+#'   1,	1,	1,
+#'   1,	2,	0,
+#'   1,	3,	1,
+#'   1,	4,	0,
+#'   2,	3,	1,
+#'   2,	9,	0,
+#'   2,	10,	1,
+#'   2,	4,	1,
+#'   2,	5,	1,
+#'   2,	6,	1,
+#'   3,	5,	1,
+#'   3,	6,	1,
+#'   3,	7,	1,
+#'   3,	8,	1,
+#' )
+#'
+#' # Find percent agreement by rater
+#' rater_agreement(example_data,
+#'                 rater_column = 'rater',
+#'                 subject_column = 'subject',
+#'                 coding_column = 'coding')
+#'
+#'
 #' @author Benjamin Goehring <bengoehr@umich.edu>
 #' @export
 

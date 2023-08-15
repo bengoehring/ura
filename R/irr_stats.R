@@ -8,6 +8,20 @@
 #' @param coding_column The name of the column containing the codings assigned by the raters as a string.
 #' @param round_digits The number of decimals to round the IRR values by. The default is 2.
 #' @param stats_to_include The IRR statistics to include in the output. Currently only supports percent agreement and Krippendorf's Alpha. See the documentation of the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package} for more information about specific IRR statistics.
+#' @return A tibble containing the IRR statistic, the statistic's value, and the number of subjects used to calculate the statistic.
+#' @examples
+#' # Return IRR statistics for the diagnoses dataset:
+#' irr_stats(diagnoses,
+#'           rater_column = 'rater_id',
+#'           subject_column = 'patient_id',
+#'           coding_column = 'diagnosis')
+#'
+#' # And IRR statistics for the anxiety dataset:
+#' irr_stats(anxiety,
+#'           rater_column = 'rater_id',
+#'           subject_column = 'subject_id',
+#'           coding_column = 'anxiety_level')
+#'
 #' @author Benjamin Goehring <bengoehr@umich.edu>
 #' @export
 irr_stats <- function(object_name,

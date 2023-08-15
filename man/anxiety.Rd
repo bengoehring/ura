@@ -22,6 +22,6 @@ anxiety
 \description{
 Simulated data from three raters rating the anxiety of 20 individuals. The codings
 range from 1 (no anxiety) to 6 (extremely anxious). The data are forked directly
-from the irr package, with the only difference being the shape of the dataset.
+from the \href{https://cran.r-project.org/web/packages/irr/irr.pdf}{irr package}, with the only difference being the shape of the dataset.
 }
 \keyword{datasets}

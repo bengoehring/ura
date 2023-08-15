@@ -18,10 +18,38 @@ from a given rater-subject.}
 }
 \value{
 A tibble where each row notes the percent agreement between rater i and all other raters who coded the same subjects (percent_agree).
-The n_dbl_coded column notes how many subjects have been coded by rater i that have also been coded by other raters.
+The n_multi_coded column notes how many subjects have been coded by rater i that have also been coded by other raters (i.e., the denominator for the percent_agree value).
 }
 \description{
 \code{rater_agreement} calculates the percent agreement between each rater and the other raters who coded the same subjects.
+}
+\examples{
+# Example data: 3 raters assigning binary values to 10 subjects
+example_data <- tibble::tribble(
+  ~rater,	~subject,	~coding,
+  1,	1,	1,
+  1,	2,	0,
+  1,	3,	1,
+  1,	4,	0,
+  2,	3,	1,
+  2,	9,	0,
+  2,	10,	1,
+  2,	4,	1,
+  2,	5,	1,
+  2,	6,	1,
+  3,	5,	1,
+  3,	6,	1,
+  3,	7,	1,
+  3,	8,	1,
+)
+
+# Find percent agreement by rater
+rater_agreement(example_data,
+                rater_column = 'rater',
+                subject_column = 'subject',
+                coding_column = 'coding')
+
+
 }
 \author{
 Benjamin Goehring <bengoehr@umich.edu>
