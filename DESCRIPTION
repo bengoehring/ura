@@ -1,9 +1,9 @@
 Package: ura
 Type: Package
-Title: Tools for Monitoring Rater Reliability
+Title: Monitoring Rater Reliability
 Version: 1.0.0
 Authors@R: person("Benjamin", "Goehring", email = "bengoehr@umich.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8450-6065"))
-Description: A set of tools for evaluating and monitoring rater progress and precision. 
+Description: Provides researchers with a simple set of diagnostic tools for monitoring the progress and reliability of raters conducting content coding tasks. Goehring (2023) <https://bengoehring.github.io/files/ps-paper-anon-word-ca.docx> argues that supervisors---especially supervisors of small teams---should utilize computational tools to monitor reliability in real time. As such, this package provides easy-to-use functions for calculating inter-rater reliability statistics and measuring the reliability of one coder compared to the rest of the team.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
